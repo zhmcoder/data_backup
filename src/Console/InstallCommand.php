@@ -6,14 +6,14 @@ use Andruby\Data\Backup\BackupServiceProvider;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
-class BackupCommand extends Command
+class InstallCommand extends Command
 {
     /**
      * The console command name.
      *
      * @var string
      */
-    protected $signature = 'data-backup:backup';
+    protected $signature = 'data-backup:install';
 
     /**
      * The console command description.
@@ -38,7 +38,7 @@ class BackupCommand extends Command
      */
     public function handle()
     {
-        $this->backup_db();
+        $this->initResources();
     }
 
     /**
@@ -46,19 +46,13 @@ class BackupCommand extends Command
      *
      * @return void
      */
-    public function backup_db()
+    public function initDatabase()
     {
-        $DB_HOST = getenv('DB_HOST');
-        $DB_DATABASE = getenv('DB_DATABASE');
-        $DB_USERNAME = getenv('DB_USERNAME');
-        $DB_PASSWORD = getenv('DB_PASSWORD');
+        DB::unprepared($this->laravel['files']->get(__DIR__ . "/stubs/deep_pay.sql"));
+    }
 
-        $dumpfname = $DB_DATABASE . "_" . date("Y-m-d_H-i-s") . ".sql";
-        $command = env('data_backup.mysql_dump') . " --add-drop-table --host=$DB_HOST --user=$DB_USERNAME ";
-        if ($DB_PASSWORD) $command .= "--password=" . $DB_PASSWORD . " ";
-        $command .= $DB_DATABASE;
-        $command .= " > " . $dumpfname;
-        system($command);
-        $this->info('finished');
+    private function initResources()
+    {
+        $this->call('vendor:publish', ['--provider' => BackupServiceProvider::class]);
     }
 }
