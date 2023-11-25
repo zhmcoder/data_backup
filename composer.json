@@ -37,7 +37,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "BackupServiceProvider"
+                "Andruby\\Data\\Backup\\BackupServiceProvider"
             ]
         }
     }
