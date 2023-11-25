@@ -2,7 +2,7 @@
 
 namespace Andruby\Data\Backup;
 
-use Andruby\Pay\Console\BackupCommand;
+use Andruby\Data\Backup\Console\BackupCommand;
 use Illuminate\Support\ServiceProvider;
 
 class BackupServiceProvider extends ServiceProvider

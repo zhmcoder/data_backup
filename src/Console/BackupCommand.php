@@ -2,7 +2,7 @@
 
 namespace Andruby\Data\Backup\Console;
 
-use Andruby\Pay\BackupServiceProvider;
+use Andruby\Data\Backup\BackupServiceProvider;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -13,16 +13,14 @@ class BackupCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'deep_pay:install {cmd}';
+    protected $signature = 'data-backup:install';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Install the deep-pay package.cmd:\n
-                              db install database;\n
-                              publish publish resource and config files';
+    protected $description = 'Install the deep-pay package.';
 
     /**
      * Install directory.
@@ -40,15 +38,7 @@ class BackupCommand extends Command
      */
     public function handle()
     {
-        $this->cmd = $this->argument('cmd');
-        $this->info($this->cmd);
-        if ($this->cmd == 'db') {
-            $this->initDatabase();
-        }
-
-        if ($this->cmd == 'publish') {
-            $this->initResources();
-        }
+        $this->initResources();
     }
 
     /**
