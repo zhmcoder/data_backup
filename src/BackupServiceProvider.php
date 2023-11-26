@@ -14,8 +14,6 @@ class BackupServiceProvider extends ServiceProvider
     ];
 
     protected $commands = [
-        BackupCommand::class,
-        InstallCommand::class
     ];
 
     public function boot()

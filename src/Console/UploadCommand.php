@@ -4,14 +4,14 @@ namespace Andruby\Data\Backup\Console;
 
 use Illuminate\Console\Command;
 
-class BackupCommand extends Command
+class UploadCommand extends Command
 {
     /**
      * The console command name.
      *
      * @var string
      */
-    protected $signature = 'data-backup:backup';
+    protected $signature = 'data-backup:upload';
 
     /**
      * The console command description.
