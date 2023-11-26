@@ -54,7 +54,7 @@ class BackupCommand extends Command
         $DB_PASSWORD = getenv('DB_PASSWORD');
 
         $dumpfname = $DB_DATABASE . "_" . date("Y-m-d_H-i-s") . ".sql";
-        $command = env('data_backup.mysql_dump') . " --add-drop-table --host=$DB_HOST --user=$DB_USERNAME ";
+        $command = config('data_backup.mysql_dump') . " --add-drop-table --host=$DB_HOST --user=$DB_USERNAME ";
         if ($DB_PASSWORD) $command .= "--password=" . $DB_PASSWORD . " ";
         $command .= $DB_DATABASE;
         $command .= " > " . $dumpfname;
