@@ -55,26 +55,26 @@ class UploadCommand extends Command
         $accessKeySecret = getenv("OSS_ACCESS_KEY_SECRET");
         // Endpoint以杭州为例，其它Region请按实际情况填写。
         $endpoint = "https://oss-cn-beijing.aliyuncs.com";
+        $upload = config('data_backup.upload');
+        foreach ($upload as $upload_config) {
+//            $upload_config = config('data_backup.upload')[0];
+            $file_full_path = $upload_config['local_path'] .
+                $upload_config['file_prefix'] . date($upload_config['date_format'])
+                . $upload_config['file_ext'];
+            $file_name = $upload_config['file_prefix'] . date($upload_config['date_format'])
+                . $upload_config['file_ext'];
 
-        // 填写Bucket名称，例如examplebucket。
-        $bucket = "zhm-backup";
-        // 填写Object完整路径，例如exampledir/exampleobject.txt。Object完整路径中不能包含Bucket名称。
+            $bucket = $upload_config['oss_bucket'];
 
-        $file_name = '公有规则模板.xlsx';
-        $object = "xunji/" . $file_name;
-        // <yourLocalFile>由本地文件路径加文件名包括后缀组成，例如/users/local/myfile.txt。
-        // 填写本地文件的完整路径，例如D:\\localpath\\examplefile.txt。如果未指定本地路径，则默认从示例程序所属项目对应本地路径中上传文件。
-        $filePath = storage_path($file_name);
+            $object = $upload_config['oss_path'] . $file_name;
 
-        try {
-            $ossClient = new OssClient($accessKeyId, $accessKeySecret, $endpoint);
+            try {
+                $ossClient = new OssClient($accessKeyId, $accessKeySecret, $endpoint);
 
-            $ossClient->uploadFile($bucket, $object, $filePath);
-        } catch (OssException $e) {
-            printf(__FUNCTION__ . ": FAILED\n");
-            printf($e->getMessage() . "\n");
-            return;
+                $ossClient->uploadFile($bucket, $object, $file_full_path);
+            } catch (OssException $e) {
+                error_log_info($e->getMessage());
+            }
         }
-
     }
 }
