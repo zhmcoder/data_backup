@@ -4,6 +4,7 @@ namespace Andruby\Data\Backup;
 
 use Andruby\Data\Backup\Console\BackupCommand;
 use Andruby\Data\Backup\Console\InstallCommand;
+use Andruby\Data\Backup\Console\UploadCommand;
 use Illuminate\Support\ServiceProvider;
 
 class BackupServiceProvider extends ServiceProvider
@@ -14,6 +15,9 @@ class BackupServiceProvider extends ServiceProvider
     ];
 
     protected $commands = [
+        BackupCommand::class,
+        UploadCommand::class,
+        InstallCommand::class
     ];
 
     public function boot()
