@@ -3,6 +3,8 @@
 namespace Andruby\Data\Backup\Console;
 
 use Illuminate\Console\Command;
+use OSS\Core\OssException;
+use OSS\OssClient;
 
 class BackupCommand extends Command
 {
@@ -11,7 +13,7 @@ class BackupCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'data-backup:backup';
+    protected $signature = 'data-backup:one {local_path} {remote_dir}';
 
     /**
      * The console command description.
@@ -37,8 +39,8 @@ class BackupCommand extends Command
      */
     public function handle()
     {
-//        $this->backup_db();
-//        $this->info('dd');
+        $this->upload();
+        $this->info('finish');
     }
 
 
@@ -47,19 +49,27 @@ class BackupCommand extends Command
      *
      * @return void
      */
-    public function backup_db()
+    public function upload()
     {
-        $DB_HOST = getenv('DB_HOST');
-        $DB_DATABASE = getenv('DB_DATABASE');
-        $DB_USERNAME = getenv('DB_USERNAME');
-        $DB_PASSWORD = getenv('DB_PASSWORD');
+        $local_path = $this->argument('local_path');
+        $remote_dir = $this->argument('remote_dir');
+        $accessKeyId = getenv("OSS_ACCESS_KEY_ID");
+        $accessKeySecret = getenv("OSS_ACCESS_KEY_SECRET");
+        // Endpoint以杭州为例，其它Region请按实际情况填写。
+        $endpoint = config('data_backup.ali_oss.oss_endpoint', 'https://oss-cn-beijing.aliyuncs.com');
+        $file_name = basename($local_path);
 
-        $dumpfname = $DB_DATABASE . "_" . date("Y-m-d_H-i-s") . ".sql";
-        $command = config('data_backup.mysql_dump') . " --add-drop-table --host=$DB_HOST --user=$DB_USERNAME ";
-        if ($DB_PASSWORD) $command .= "--password=" . $DB_PASSWORD . " ";
-        $command .= $DB_DATABASE;
-        $command .= " > " . $dumpfname;
-        system($command);
-        $this->info('finished');
+        $oss_bucket = config('data_backup.ali_oss.oss_bucket', 'zhm-backup');
+
+        $object = $remote_dir . $file_name;
+
+        try {
+            $ossClient = new OssClient($accessKeyId, $accessKeySecret, $endpoint);
+            $ossClient->uploadFile($oss_bucket, $object, $local_path);
+        } catch (OssException $e) {
+            $this->info($e->getMessage());
+            error_log_info($e->getMessage());
+        }
+
     }
 }

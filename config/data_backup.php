@@ -5,6 +5,8 @@ return [
     'ali_oss' => [
         'key' => env('ALI_OSS_KEY'),
         'secret' => env('ALI_OSS_SECRET'),
+        'oss_bucket' => 'zhm-backup',
+        'oss_endpoint' => 'https://oss-cn-beijing.aliyuncs.com'
     ],
     'upload' => [
         [
