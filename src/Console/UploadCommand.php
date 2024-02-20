@@ -67,11 +67,14 @@ class UploadCommand extends Command
             $bucket = $upload_config['oss_bucket'];
 
             $object = $upload_config['oss_path'] . $file_name;
-
+            $options = array(
+                OssClient::OSS_CHECK_MD5 => true,
+                OssClient::OSS_PART_SIZE => getenv("OSS_PART_SIZE", 100 * 1024 * 1024),
+            );
             try {
                 $ossClient = new OssClient($accessKeyId, $accessKeySecret, $endpoint);
 
-                $ossClient->uploadFile($bucket, $object, $file_full_path);
+                $ossClient->multiuploadFile($bucket, $object, $file_full_path, $options);
             } catch (OssException $e) {
                 error_log_info($e->getMessage());
             }
