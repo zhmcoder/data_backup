@@ -53,8 +53,8 @@ class BackupCommand extends Command
     {
         $local_path = $this->argument('local_path');
         $remote_dir = $this->argument('remote_dir');
-        $accessKeyId = getenv("OSS_ACCESS_KEY_ID");
-        $accessKeySecret = getenv("OSS_ACCESS_KEY_SECRET");
+        $accessKeyId = env("OSS_ACCESS_KEY_ID");
+        $accessKeySecret = env("OSS_ACCESS_KEY_SECRET");
         // Endpoint以杭州为例，其它Region请按实际情况填写。
         $endpoint = config('data_backup.ali_oss.oss_endpoint', 'https://oss-cn-beijing.aliyuncs.com');
         $file_name = basename($local_path);
@@ -65,7 +65,11 @@ class BackupCommand extends Command
 
         try {
             $ossClient = new OssClient($accessKeyId, $accessKeySecret, $endpoint);
-            $ossClient->uploadFile($oss_bucket, $object, $local_path);
+            $options = array(
+                OssClient::OSS_CHECK_MD5 => true,
+                OssClient::OSS_PART_SIZE => env("OSS_PART_SIZE", 100 * 1024 * 1024),
+            );
+            $ossClient->multiuploadFile($oss_bucket, $object, $local_path, $options);
         } catch (OssException $e) {
             $this->info($e->getMessage());
             error_log_info($e->getMessage());

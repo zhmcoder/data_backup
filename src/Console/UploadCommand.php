@@ -51,8 +51,8 @@ class UploadCommand extends Command
      */
     public function upload()
     {
-        $accessKeyId = getenv("OSS_ACCESS_KEY_ID");
-        $accessKeySecret = getenv("OSS_ACCESS_KEY_SECRET");
+        $accessKeyId = env("OSS_ACCESS_KEY_ID");
+        $accessKeySecret = env("OSS_ACCESS_KEY_SECRET");
         // Endpoint以杭州为例，其它Region请按实际情况填写。
         $endpoint = "https://oss-cn-beijing.aliyuncs.com";
         $upload = config('data_backup.upload');
@@ -69,11 +69,10 @@ class UploadCommand extends Command
             $object = $upload_config['oss_path'] . $file_name;
             $options = array(
                 OssClient::OSS_CHECK_MD5 => true,
-                OssClient::OSS_PART_SIZE => getenv("OSS_PART_SIZE", 100 * 1024 * 1024),
+                OssClient::OSS_PART_SIZE => env("OSS_PART_SIZE", 100 * 1024 * 1024),
             );
             try {
                 $ossClient = new OssClient($accessKeyId, $accessKeySecret, $endpoint);
-
                 $ossClient->multiuploadFile($bucket, $object, $file_full_path, $options);
             } catch (OssException $e) {
                 error_log_info($e->getMessage());
