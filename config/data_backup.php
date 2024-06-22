@@ -15,7 +15,8 @@ return [
             'local_path' => 'path',
             'date_format' => 'Y_m_d',//2024_01_01
             'oss_path' => 'conf',
-            'oss_bucket' => 'bucket'
+            'oss_bucket' => 'bucket',
+            'expired_day' => 30
         ]
     ],
     'download' => [

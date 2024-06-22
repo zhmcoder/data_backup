@@ -20,7 +20,7 @@ class UploadCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Install the deep-pay package.';
+    protected $description = 'data backup upload oss.';
 
     /**
      * Install directory.
@@ -40,7 +40,7 @@ class UploadCommand extends Command
     public function handle()
     {
         $this->upload();
-        $this->info('dd');
+        $this->info('finish');
     }
 
 
@@ -57,7 +57,6 @@ class UploadCommand extends Command
         $endpoint = "https://oss-cn-beijing.aliyuncs.com";
         $upload = config('data_backup.upload');
         foreach ($upload as $upload_config) {
-//            $upload_config = config('data_backup.upload')[0];
             $file_full_path = $upload_config['local_path'] .
                 $upload_config['file_prefix'] . date($upload_config['date_format'])
                 . $upload_config['file_ext'];
@@ -74,6 +73,18 @@ class UploadCommand extends Command
             try {
                 $ossClient = new OssClient($accessKeyId, $accessKeySecret, $endpoint);
                 $ossClient->multiuploadFile($bucket, $object, $file_full_path, $options);
+                if (array_key_exists('expired_day', $upload_config)) {
+                    $expired_day = $upload_config['expired_day'];
+                } else {
+                    $expired_day = 30;
+                }
+                $delete_file = $upload_config['file_prefix'] .
+                    date($upload_config['date_format'], strtotime('-' . $expired_day . ' day'))
+                    . $upload_config['file_ext'];
+                $this->info($delete_file);
+                //delete
+                $delete_object = $upload_config['oss_path'] . $delete_file;
+                $ossClient->deleteObject($bucket, $delete_object);
             } catch (OssException $e) {
                 error_log_info($e->getMessage());
             }
